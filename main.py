@@ -44,8 +44,7 @@ def get_updated_manifest_id(updated_manifest_id):
 
 
 def update_manifest(steam_dir, updated_manifest_id):
-    manifest_line_regex = re.compile("[\s]+(?P<manifest_line>\"manifest\"[\s]+\"[0-9]{16,19}\")[\s]+")
-    manifest_id_regex = re.compile("\"manifest\"[\s]+\"(?P<manifest_id>[0-9]{16,19})\"")
+    manifest_id_regex = r'"manifest"\s+"(?P<manifest_id>[0-9]{16,19})"'
     file_name = "appmanifest_617830.acf"
     target = os.path.join(steam_dir, "steamapps")
     target = os.path.join(target, file_name)
@@ -54,22 +53,23 @@ def update_manifest(steam_dir, updated_manifest_id):
     with open(target, 'r') as file:
         file_content = file.read()
 
-    match_line = manifest_line_regex.match(file_content)
-    if match_line is None:
-        return
+    match_line = re.findall(r'\s+(?P<manifest_line>"manifest"\s+"[0-9]{16,19}")\s+', file_content)
+    if len(match_line) < 1:
+        print(f"Error Unable to find the manifest line in {target}")
+        return 1
 
-    line = match_line.group('manifest_line')
+    line = match_line[0]
 
-    match_id = manifest_id_regex.match(line)
-    m_id = match_id.group('manifest_id')
+    match_m_id = re.findall(manifest_id_regex, line)
+    m_id = match_m_id[0]
 
     updated_manifest_id = get_updated_manifest_id(updated_manifest_id)
 
     updated_line = line.replace(m_id, updated_manifest_id)
     updated_file_content = file_content.replace(line, updated_line)
     # Open the manifest file in write only mode
-    #with open(target, 'w') as file:
-        #file.write(updated_file_content)
+    with open(target, 'w') as file:
+        file.write(updated_file_content)
     print(updated_file_content)
 
 
