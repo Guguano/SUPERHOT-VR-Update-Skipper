@@ -44,8 +44,8 @@ def get_updated_manifest_id(updated_manifest_id):
 
 
 def update_manifest(steam_dir, updated_manifest_id):
-    manifest_line_regex = re.compile("(?P<manifest_line>\"manifest\"\s*\"[0-9]+\")")
-    manifest_id_regex = re.compile("\"manifest\"[\s]*\"(?P<manifest_id>[0-9]{16,19})\"")
+    manifest_line_regex = re.compile("[\s]+(?P<manifest_line>\"manifest\"[\s]+\"[0-9]{16,19}\")[\s]+")
+    manifest_id_regex = re.compile("\"manifest\"[\s]+\"(?P<manifest_id>[0-9]{16,19})\"")
     file_name = "appmanifest_617830.acf"
     target = os.path.join(steam_dir, "steamapps")
     target = os.path.join(target, file_name)
